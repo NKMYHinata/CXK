@@ -6,7 +6,7 @@ import pandas as pd
 import openpyxl
 from cnsenti import Sentiment
 
-# 需要分析的数据量，最大样本数为100,000，如果期望三分钟内完成分析建议设置在10,000以内
+# 需要分析的数据量，最大样本数为102190，如果期望三分钟内完成分析建议设置在10000以内
 MAXLINE = 1000
 
 import os
