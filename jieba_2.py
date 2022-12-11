@@ -7,7 +7,7 @@ import openpyxl
 from cnsenti import Sentiment
 
 # 需要分析的数据量，最大样本数为102190，如果期望三分钟内完成分析建议设置在10000以内
-MAXLINE = 1000
+MAXLINE = 102100
 
 import os
 import requests
@@ -171,29 +171,17 @@ plt.ylabel('发帖数量')
 # 显示图表
 plt.show()
 
-import gensim
-from gensim import corpora
+# 创建一个字典，其中包含用户等级和它出现的次数
+user = {'普通用户': 0, '黄v': 0, '金v': 0, '蓝v': 0}
 
-# 将文章数据清洗并转换为词袋模型
-# 您可以使用 split() 函数将每个文章拆分为单独的词汇单元
-# 然后使用 gensim.corpora.Dictionary() 将词袋模型传递给 LDA 模型
-data_as_words = [str(s).split() for s in txt]
-dictionary = corpora.Dictionary(data_as_words)
-corpus = [dictionary.doc2bow(article) for article in data_as_words]
+for lv in data['微博等级'][:MAXLINE]:
+    if lv in user:
+        user[lv] += 1
 
-# 定义 LDA 模型，并指定主题数量
-lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,  # 指定 LDA 模型要处理的语料库，必需参数。
-                                            id2word=dictionary,  # 指定 LDA 模型中的词汇表，必需参数。
-                                            num_topics=1,  # 指定 LDA 模型中要建模的主题数量，默认值为 100。
-                                            random_state=100,  # 指定 LDA 模型的随机种子，以便可以复现模型，默认值为 None。
-                                            update_every=1,  # 指定 LDA 模型在处理一个块之后要更新一次主题的频率，默认值为 1。
-                                            chunksize=100,  # 指定 LDA 模型在每次迭代时处理的文档数量，默认值为 2000。
-                                            passes=10,  # 指定 LDA 模型进行的迭代次数，默认值为 1。
-                                            alpha='auto',  # 指定 LDA 模型中文档-主题分布的先验分布，默认值为 'auto'。
-                                            per_word_topics=True)  # 指定 LDA 模型是否要为每个词汇单元存储主题分布，默认值为 False。
+# 创建饼状图
+plt.pie(user.values(), labels=user.keys(), autopct='%1.1f%%')
 
-# 输出每个主题的前 10 个词
-for idx, topic in lda_model.print_topics(-1):
-    print('Topic: {} \nWords: {}'.format(idx, topic))
+# 显示图表
+plt.show()
 
 
